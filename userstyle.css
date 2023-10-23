@@ -1,0 +1,78 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1a1a1a;
+    color: white;
+    padding: 1vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
+    width: 60vh;  /* Set width as 60% of viewport height for an iPad-like ratio */
+    margin: auto;
+}
+a {
+    text-decoration: none;
+}
+
+a:hover, a:active, a:focus {
+    text-decoration: none;
+}
+
+.welcome-message {
+    font-size: 4em;
+    margin-top: 2em; /* Adjust the margin to move the "Hi," further up */
+}
+
+.user-selection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+    gap: 1.5em; /* Space between users */
+    margin-top: 5em;
+}
+
+.user {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 240px; /* Size of the clickable circle */
+    height: 240px; /* Size of the clickable circle */
+    background-color: rgba(255, 255, 255, 0.1); /* Light transparent circle */
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    justify-content: center;
+    padding: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.user:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.user-icon {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 0.5em;
+}
+
+.user-icon img {
+    width: 100%;
+    height: 100%;
+}
+
+.add-user .user-icon img {
+    /* Adjust the size of the add-icon if necessary */
+    width: 100%;
+    height: 100%;
+}
+
+.user-name {
+    text-align: center;
+    font-size: 25px;
+    color: #c3ccd9;
+}

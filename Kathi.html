@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Voice Assistant</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Top bar -->
+    <div class="top-bar">
+        <div class="user-info">
+            <img src="Kathi.png" alt="User Icon">
+            Kathi
+        </div>
+        <span id="current-time">12:34</span>
+        <!-- Add other icons/info on the right if needed -->
+        <div>🔋 ᯤ</div>
+    </div>
+    
+    <!-- Map -->
+    <div class="map" id="map-api">MAP API HERE</div>
+    
+    <!-- Music & Voice Interaction Container -->
+    <div class="music-voice-container">
+        <div class="music">MUSIC API HERE</div>
+        <div class="voice-interaction">Voice Interaction Content Here</div>
+    </div>
+    
+    <!-- Bottom buttons -->
+    <div class="bottom-buttons">
+        <button id="left-seat"><img src="left.png" alt="Left Seat Heating"></button>
+        <button id="front-windshield"><img src="front.png" alt="front windshield fog"></button>
+        <button id="back-windshield"><img src="back.png" alt="back windshield fog"></button>
+        <button id="fan"><img src="fan.png" alt="air conditioner"></button>
+        <button id="tempreture"><img src="tem.png" alt="tempreture"></button>
+        <button id="function"><img src="function.png" alt="funtion"></button>
+        <button id="right-seat"><img src="right.png" alt="Right Seat Heating"></button>
+    </div>
+    
+    
+    <script>
+        // Add functionality for the user info
+        document.querySelector('.user-info').addEventListener('click', function() {
+            // Redirect or show the user selection interface
+        });
+        
+        // Example to toggle button states
+        document.querySelectorAll('.bottom-buttons .bottom-button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                btn.classList.toggle('active');
+            });
+        });
+        
+        // Update the real-time clock
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('current-time').innerText = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+        }
+        setInterval(updateTime, 1000);
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/xstate@4.25.0/dist/xstate.js"></script>
+    <script src="src/index.js"></script>
+</body>
+
+</html>

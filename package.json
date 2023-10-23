@@ -1,0 +1,25 @@
+{
+    "name": "speechStateDM",
+    "license": "GPL-3.0",
+    "packageManager": "yarn@3.6.3",
+    "scripts": {
+        "start": "parcel index.html"
+    },
+    "devDependencies": {
+        "buffer": "^5.5.0||^6.0.0",
+        "parcel": "^2.9.3",
+        "process": "^0.11.10",
+        "typescript": "^5.2.2",
+        "typescript-language-server": "^3.3.2",
+        "webpack": "^5.88.2",
+        "webpack-cli": "^5.1.4"
+    },
+    "dependencies": {
+        "microsoft-cognitiveservices-speech-sdk": "^1.32.0",
+        "speechstate": "https://github.com/vladmaraev/speechstate#no-react",
+        "xstate": "^5.0.0-beta.21"
+    },
+    "resolutions": {
+        "speechstate": "portal:../speechstate"
+    }
+}

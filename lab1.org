@@ -1,0 +1,51 @@
+#+OPTIONS: toc:t num:nil
+#+TITLE: Lab 1. Form-based dialogue management
+
+#+BEGIN_EXAMPLE
+This version is preliminary and subject to change
+#+END_EXAMPLE
+
+Frame-based dialogue system allows a user to do is to provide
+information not only in a fixed number of pieces, but also in "one
+shot". For example, if someone has to order a merchandise, they might
+spell their address and their post number alltogether, without waiting
+the system to ask for each information.
+
+For example, in the case of a booking flight system, a user could fill
+the required "information slots" in many ways. For example, she could
+say in one utterance where she wants to go and when she wants to
+leave, or where she wants to go and from where she wants to leave, and
+so on. You need to handle these cases and make sure that the
+information is stored accordingly.
+
+Create a dialogue system which will be able to behave similarly to
+[[https://www.w3.org/TR/voicexml20/#dml2.1.6][form interpretation algorithm (FIA)]] in VoiceXML. Namely, the system
+should be able to:
+1. Recognise one-shot and incomplete requests, e.g. "create meeting
+   with Bob on Friday at noon", "create meeting with Bob on Friday",
+   "create meeting with Bob".
+2. If request is incomplete, system should only ask for the slots that
+   are missing. 
+3. The system should allow over-answering, e.g. it should be able to
+   understand "Bill on Friday" as an answer to the question "Who are
+   you meeting with?".
+
+
+You can pick any domain of your preference, e.g. flight booking,
+appointment booking, situated language learning ("put the red book on
+the table") or anything related to your project. *You have to have at
+least 3 slots*.
+
+Your focus for this lab is dialogue management, not NLU, so you can
+have a simplistic JavaScript grammar for parsing user input:
+
+#+begin_src javascript
+const grammar = {
+  "put the red book on the table": {
+    color: "red",
+    what: "book",
+    where: "table",
+  },
+};
+#+end_src
+

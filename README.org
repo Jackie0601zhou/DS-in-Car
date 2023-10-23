@@ -1,0 +1,73 @@
+#+TITLE: SpeechState starter project
+
+** Getting started
+1. You need [[https://nodejs.org/en][Node.js (LTS version)]] and [[https://yarnpkg.com/getting-started/install][Yarn package manager]].
+2. Clone ~SpeechState~ (https://github.com/vladmaraev/speechstate) into
+   a sibling directory.
+3. Switch to ~no-react~ branch. 
+4. Install the dependencies and build ~SpeechState~:
+   #+begin_src sh
+     yarn
+     npx tsc
+   #+end_src
+5. Clone this project. 
+6. Link ~SpeechState~ (from this project):
+   #+begin_src sh
+     yarn link ../speechstate -A -p -r
+   #+end_src
+7. Add Azure key in ~src/index.ts~
+8. Install the dependencies and start the application:
+   #+begin_src
+     yarn
+     yarn start
+   #+end_src
+
+Some considerations:
+1. Yarn (update to last version:  ~yarn set version stable~, see ~.yarnrc.yml~)
+2. Cleaning parcel cache: ~rm -rf .parcel-cache~
+
+   
+* Assignments
+[[./lab1.org][Form-based dialogue management]]
+* Tutorial
+** Recap
++ [ ] states
++ [ ] transition
++ [ ] actions
++ [ ] conditions (guards)
++ [ ] context
++ [ ] timers/delays (see SpeechState timers)
++ [ ] history
++ [ ] invoke
+
+*** example of ~assign~
+#+begin_src typescript
+assign({
+  feedback: ({ context, event }) => context.feedback + " " + event.feedback,
+})
+// Some feedback Some other feedback
+#+end_src
+  
+** Xstate 5 - what's new?
+
+https://stately.ai/docs/xstate-v5/migration
+
++ [ ] Actor model
++ [ ] Spawning
+
+  
+** Project structure
+
+...and actor model
+
+
+** Parallel states
+
+(GUI example)
+
+
+** Form-filling
+
+https://www.w3.org/TR/voicexml20/#dml2.1.6
+
+

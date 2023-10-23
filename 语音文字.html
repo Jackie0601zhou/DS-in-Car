@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Speech to Text</title>
+</head>
+<body>
+    <div class="text-box">
+        <!-- 这里放文本框 -->
+        <div class="system-message">Hi Jackie, you can say where you want to go.</div>
+        <div id="user-utterance"></div> <!-- 显示用户的话语 -->
+    </div>
+
+    <script>
+        const userUtteranceDiv = document.getElementById('user-utterance');
+        
+        // Azure 语音服务的订阅密钥和服务区域
+        const subscriptionKey = 'a9d379c298ba461c9af086382567d4e6';
+        const region = 'northeurope';
+             
+        // 创建一个 SpeechRecognition 对象
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        
+        // 设置语音识别参数
+        recognition.lang = 'en-US'; // 识别语言
+        recognition.interimResults = true; // 获取中间结果，即时识别
+        recognition.continuous = true; // 连续识别
+        
+        let interimTranscript = '';
+        
+        // 监听识别结果
+        recognition.onresult = (event) => {
+            const results = event.results;
+            const lastResult = results[results.length - 1];
+            const transcript = lastResult[0].transcript;
+            const isFinal = lastResult.isFinal;
+            
+            if (!isFinal && transcript !== interimTranscript) {
+                // 如果不是最终结果，并且与上一个中间结果不同，将中间结果逐字添加到显示文本框中
+                interimTranscript = transcript;
+                userUtteranceDiv.innerHTML = interimTranscript;
+            } else if (isFinal) {
+                // 如果是最终结果，显示整个文本
+                interimTranscript = ''; // 清空中间结果
+                userUtteranceDiv.innerHTML = transcript;
+
+                // 调用 Azure 语音识别服务将文本发送到 Azure
+                // 请参考 Azure 语音服务的文档来实现这一步骤
+            }
+        };
+        
+        // 启动语音识别
+        recognition.start();
+    </script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+#+OPTIONS: toc:t num:nil
+#+TITLE: Lab 2. Experimenting with ChatGPT
+
+#+BEGIN_EXAMPLE
+This version is preliminary and subject to change
+#+END_EXAMPLE
+
+In this lab you will explore how AI chatbots can be used in
+XState. Additionally, you will be reminded how to use external web
+services, for instance, to access remote APIs. The lab is composed of
+the following steps.
+
+1. Obtain an ChatGPT API key from Vlad.
+2. You can work in a new branch of the same repository, branching out
+   from either your Lab 1 code or the starter code.
+3. Include the function that implements ChatGPT invocation in your
+   code. See the code below. Feel free to modify this function (see 7
+   below).
+4. Replace the API key in the invocation function.
+5. You will need to create a use-case for using ChatGPT in
+   SpeechState.
+   - For instance, you can implement an NLU prompt, asking for intents
+     and entities for user input. Hint: you can ask ChatGPT to return
+     structured data (i.e. JSON objects) which you then can parse.
+6. You need to show that the information that you receive from ChatGPT
+   is processed and further used by your application.
+7. Feel free to experiment! For instance:
+   - You can adjust parameters in the API call (such as temperature),
+     see [[https://platform.openai.com/docs/api-reference/chat][Open AI API docs]].
+   - You can think of different scenarios which make ChatGPT useful,
+     for instance, language generation.
+   - You can try [[https://platform.openai.com/docs/models/gpt-3-5][other models]].
+   - You can use dialogue history (either as part of a single prompt
+     and or extending the conversation in ~messages~).
+   - ...and many more!
+8. Provide a short report (max 1 A4 page) about your
+   experiments.
+
+
+
+* Resources
+** ChatGPT invocation
+#+begin_src javascript
+  async function fetchFromChatGPT(prompt: string, max_tokens: number) {
+    const myHeaders = new Headers();
+    myHeaders.append(
+      "Authorization",
+      "Bearer <your_key_goes_here>",
+    );
+    myHeaders.append("Content-Type", "application/json");
+    const raw = JSON.stringify({
+      model: "gpt-3.5-turbo",
+      messages: [
+              {
+                role: "user",
+                content: prompt,
+              },
+            ],
+      temperature: 0,
+      max_tokens: max_tokens,
+    });
+
+    const response = fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+      redirect: "follow",
+    })
+      .then((response) => response.json())
+      .then((response) => response.choices[0].message.content);
+
+    return response;
+  }
+#+end_src
+** XState docs
+- [[https://stately.ai/docs/xstate-v5/invoke][Invoke]]
+- [[https://stately.ai/docs/xstate-v5/migration#use-actor-logic-creators-for-invokesrc-instead-of-functions][xstate v5 changes in invoke]] (I recommend using ~fromPromise~)
+** OpenAI docs
+- [[https://platform.openai.com/docs/introduction/overview][Documentation]]
+- [[https://platform.openai.com/docs/api-reference][API reference]]
+** Git branches
+- [[https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-and-deleting-branches-within-your-repository][GitHub docs]]
+- [[https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell][Git docs]]

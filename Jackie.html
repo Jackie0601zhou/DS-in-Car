@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Voice Assistant</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.js"></script>
+
+</head>
+
+<body>
+    <!-- Top bar -->
+    <div class="top-bar">
+        <div class="user-info">
+            <img src="Jackie.png" alt="User Icon">
+            Jackie
+        </div>
+        <span id="current-time">12:34</span>
+        <!-- Add other icons/info on the right if needed -->
+        <div>🔋 ᯤ</div>
+    </div>
+    
+    <!-- Map -->
+    <div id="map-container">
+        <button id="preferences-toggle-btn">+</button>
+        <div class="map" id="map-api"></div>
+        <div id="search-input">
+            <input class="search" id="autocomplete-input" type="text" placeholder="Search...">
+            <button id="close-btn">&times;</button>
+        </div>
+        <div id="next-step"></div>
+        <div id="preferences-container" style="display: none;">
+            <h4>Route Perference:</h4>
+            <div>
+                <input type="checkbox" id="avoid-highways" value="highways">
+                <label for="avoid-highways">Avoid highways</label>
+            </div>
+            <div>
+                <input type="checkbox" id="avoid-tolls" value="tolls">
+                <label for="avoid-tolls">Avoid tolls</label>
+            </div>
+        
+            <h4>Stopover:</h4>
+            <input type="text" id="waypoint" placeholder="add stopover...">
+            </div>
+    </div>
+    
+    
+    <!-- Music & Voice Interaction Container -->
+    <div class="music-voice-container">
+        <div class="music">MUSIC API HERE</div>
+
+
+        <div class="voice-interaction"> 
+            <div><button id="button">🎙 Start Voice Command</button></div>
+
+            <div class="icon-container">
+                <!-- 这里放表示说话或正在听的图标 -->
+                <div class="icon1" id="speak-icon">
+                    <dotlottie-player src="https://lottie.host/3e8e50d4-12ad-46ca-bea7-da26aed51d83/CE2ecP7QIt.json" background="transparent" speed="1" style="width: 300px; height: 300px;" loop autoplay></dotlottie-player>
+                </div>
+                <div class="icon2" id="listen-icon">
+                    <dotlottie-player src="https://lottie.host/36867b86-2944-4361-a071-8fe569590222/Xt1ilLVK3n.json" background="transparent" speed="1" style="width: 300px; height: 300px;" loop autoplay></dotlottie-player>
+                </div>
+              </div>
+
+              <div class="text-box">
+                <!-- 这里放文本框 -->
+                <div class="system-message" id="user-utterance">If you have any questions, feel free to call my name loudly! Have a safe journey!</div>
+              </div>
+
+            </div>
+
+
+    </div>
+    
+
+
+
+    <!-- Bottom buttons -->
+    <div class="bottom-buttons">
+        <button id="left-seat"><img src="left.png" alt="Left Seat Heating"></button>
+        <button id="front-windshield"><img src="front.png" alt="front windshield fog"></button>
+        <button id="back-windshield"><img src="back.png" alt="back windshield fog"></button>
+        <button id="fan"><img src="fan.png" alt="air conditioner"></button>
+        <button id="tempreture"><img src="tem.png" alt="tempreture"></button>
+        <button id="function"><img src="function.png" alt="funtion"></button>
+        <button id="right-seat"><img src="right.png" alt="Right Seat Heating"></button>
+    </div>
+    
+    
+    <script>
+        // Add functionality for the user info
+        document.querySelector('.user-info').addEventListener('click', function() {
+            // Redirect or show the user selection interface
+        });
+        
+        // Example to toggle button states
+        document.querySelectorAll('.bottom-buttons .bottom-button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                btn.classList.toggle('active');
+            });
+        });
+        
+        // Update the real-time clock
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('current-time').innerText = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+        }
+        setInterval(updateTime, 1000);
+
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/xstate@4.25.0/dist/xstate.js"></script>
+    <script src="map.js"></script>
+    <script type="module" src="src/index.ts"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWh5eBR6ihrCSBbEk4Oe6rx2WrzbyZWTM&libraries=places&callback=initMap&language=en" async defer></script>
+
+</body>
+
+</html>

@@ -1,0 +1,213 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1a1a1a;
+    color: white;
+    padding: 1vw;
+    display: flex;
+    flex-direction: column;
+    height: 90vh;
+    width: 60vh;  /* Set width as 60% of viewport height for an iPad like ratio */
+    margin: auto;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 15px;
+    align-items: center;
+}
+
+/* User Info - Updated */
+.user-info {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+.user-info img {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+}
+
+/* Time (to be updated dynamically) */
+#current-time {
+    text-align: center;
+    font-size: 24px;
+    margin: 10px 0;
+}
+
+/* Map API */
+#map-container {
+    position: relative;
+    flex-grow: 2;  /* Allows the map container to take the remaining space */
+    overflow: hidden;  /* Ensures contained absolute elements don't spill out */
+}
+#preferences-toggle-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1;
+}
+
+#preferences-container {
+    position: absolute;
+    top: 40px;
+    right: 10px;
+    width: 200px;
+    background-color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 10px;
+    z-index: 1;
+    color:#1a1a1a;
+    font-size: 14px;
+
+}
+
+#map-api {
+    background-color: #2a2a2a; /* Placeholder background color */
+    height: 100%;
+    margin: 10px 0;
+    position: relative;
+}
+
+#search-input {
+    position: absolute;
+    top: 20px;
+    left: 10px;
+    z-index: 1000;
+    width: 220px; /* or whatever width you want */
+    padding: 8px 12px;
+    border: none; /* Remove default border */
+    border-radius: 25px; /* Make the input oval */
+    outline: none; /* Remove focus outline */
+    background-color: white; 
+}
+
+#close-btn {
+    position: absolute;
+    right: 5px;  /* 使按钮位于容器的右侧 */
+    top: 50%;
+    transform: translateY(-50%);  /* 垂直居中按钮 */
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#next-step {
+    display:none;
+    position: absolute;
+    top: 70px;
+    left: 10px;
+    z-index: 1000;
+    width: 220px; /* or whatever width you want */
+    padding: 8px 12px;
+    border: none; /* Remove default border */
+    border-radius: 25px; /* Make the input oval */
+    outline: none; /* Remove focus outline */
+    background-color: white; 
+    color:#1a1a1a
+}
+#next-step b {
+    color: #1a1a1a
+}
+
+#autocomplete-input {
+    width: 210px;
+    border: none;
+    outline: none;  /* 这会移除当输入框被选中时的默认蓝色或其他颜色的轮廓 */
+    /* 如果需要, 你还可以添加更多的样式属性来调整输入框的外观 */
+    box-shadow: none;  /* 如果有的话，这会移除默认的阴影 */
+}
+
+
+/* Music & Voice Interaction Container */
+.music-voice-container {
+    display: flex;
+    margin: 15px 0;
+    flex: 1.5; 
+}
+
+.music {
+    flex: 1;
+    border-right: 1px solid #333;
+    padding: 15px;
+}
+
+.voice-interaction {
+    flex: 1;
+    padding: 15px;
+    text-align: center;
+    display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.icon-container {
+    /* 样式表示说话或正在听的图标容器 */
+    text-align: center;
+    margin-bottom: 20px; /* 图标容器与文本框之间的距离 */
+  }
+
+  .icon1, .icon2 {
+  display: none;
+}
+  
+  .text-box {
+    /* 样式文本框的外层容器 */
+    text-align: center;
+    
+  }
+  
+  .system-message {
+    /* 样式系统消息文本 */
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  #button {
+    /* 样式按钮 */
+    background-color:#1a1a1a;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px; /* 按钮与上方的距离 */
+  }
+ 
+  
+  
+
+
+
+
+.bottom-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.bottom-buttons button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px;
+    width: calc(100% / 7);  /* Divide the full width by 7 for equal spacing */
+}
+
+.bottom-buttons button:focus {
+    outline: none;  /* To remove the focus outline, but remember accessibility considerations */
+}
+
+.bottom-buttons img {
+    max-width: 40%;  /* To make sure the image does not exceed the width of the button */
+    height: auto;  /* Maintain the aspect ratio of the image */
+    display: block;  /* To remove any unnecessary white space below the image */
+}
+
+
+.bottom-button.active {
+    background-color: #444; /* Button active color when toggled on */
+}
