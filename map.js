@@ -1,4 +1,5 @@
 
+var userCurrentLocation = null;
 document.addEventListener("DOMContentLoaded", function() {
     var map;
 var directionsService;
@@ -7,7 +8,8 @@ var userMarker;
 var carIcon = { url: 'car.png'};
 var waypoints = [];
 var lastSelectedDestination = null;
-var userCurrentLocation = null;
+
+
 
 
 
@@ -87,7 +89,7 @@ window.initMap = function() {
 }
 initMap();
 
-function calculateAndDisplayRoute(start, end, Waypoints) {
+function calculateAndDisplayRoute(start, end, Waypoints, routePreference) {
     var request = {
         origin: start,
         destination: end,
@@ -96,13 +98,15 @@ function calculateAndDisplayRoute(start, end, Waypoints) {
         travelMode: 'DRIVING'
     };
 
-    // Check if user wants to avoid highways
-    if (document.getElementById('avoid-highways').checked) {
+    // 默认使用HTML复选框来设置偏好
+    request.avoidHighways = document.getElementById('avoid-highways').checked;
+    request.avoidTolls = document.getElementById('avoid-tolls').checked;
+
+    // 如果提供了routePreference参数，它将覆盖复选框的选择
+    if (routePreference === 'avoid highways') {
         request.avoidHighways = true;
     }
-
-    // Check if user wants to avoid tolls
-    if (document.getElementById('avoid-tolls').checked) {
+    if (routePreference === 'avoid tolls') {
         request.avoidTolls = true;
     }
 
@@ -122,13 +126,17 @@ function calculateAndDisplayRoute(start, end, Waypoints) {
                 // 如果没有得到期望的路线信息，隐藏next-step元素
                 document.getElementById('next-step').style.display = 'none';
             }
+            routeStatus = 'ok';
         } else {
             console.error('Directions request failed due to ' + status);
+            alert('Unable to find a route. Please try a different starting point or destination.');
         }
     });
 }
 
-function navigateUsingPlaceName(startName, endName, stopoverName) {
+
+function navigateUsingPlaceName(startName, endName, stopoverName, routePreference) {
+    console.log("Starting navigation from", startName, "to", endName);
     var service = new google.maps.places.PlacesService(map);
     var startLatLng, endLatLng, stopoverLatLng;
     var waypoints = []; // 初始化为空数组
@@ -139,14 +147,14 @@ function navigateUsingPlaceName(startName, endName, stopoverName) {
     }, function(results, status) {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
             startLatLng = results[0].geometry.location;
-            
+
             service.findPlaceFromQuery({
                 query: endName,
                 fields: ['geometry']
             }, function(results, status) {
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
                     endLatLng = results[0].geometry.location;
-                    
+
                     if (stopoverName) {
                         // 如果提供了stopover，则查询其经纬度
                         service.findPlaceFromQuery({
@@ -159,18 +167,20 @@ function navigateUsingPlaceName(startName, endName, stopoverName) {
                                     location: stopoverLatLng,
                                     stopover: true
                                 });
-                                calculateAndDisplayRoute(startLatLng, endLatLng, waypoints);
+                                // 注意这里添加了 routePreference 参数
+                                calculateAndDisplayRoute(startLatLng, endLatLng, waypoints, routePreference);
                             }
                         });
                     } else {
                         // 如果没有提供stopover，直接进行导航
-                        calculateAndDisplayRoute(startLatLng, endLatLng, waypoints);
+                        calculateAndDisplayRoute(startLatLng, endLatLng, waypoints, routePreference);
                     }
                 }
             });
         }
     });
 }
+
 
 
 
