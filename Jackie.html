@@ -13,6 +13,7 @@
 <body>
     <!-- Top bar -->
     <div class="top-bar">
+        
         <div class="user-info">
             <img src="Jackie.png" alt="User Icon">
             Jackie
@@ -50,7 +51,12 @@
     
     <!-- Music & Voice Interaction Container -->
     <div class="music-voice-container">
-        <div class="music">MUSIC API HERE</div>
+        <div class="music">
+            <iframe id="lofi" width="560" height="315" src="https://www.youtube.com/embed/jfKfPfyJRdk?enablejsapi=1"  allow="autoplay;"></iframe>
+             <iframe id="fade" width="560" height="315" src="https://www.youtube.com/embed/NFPGSZj9nqk?enablejsapi=1"  allow="autoplay;"></iframe>
+             <iframe id="jazz" width="560" height="315" src="https://www.youtube.com/embed/yJqBaZyMvXQ?enablejsapi=1"  allow="autoplay;"></iframe>
+             <iframe id="funk" width="560" height="315" src="https://www.youtube.com/embed/fE2I7-50zPs?enablejsapi=1"  allow="autoplay;"></iframe>
+        </div>
 
 
         <div class="voice-interaction"> 
@@ -81,17 +87,49 @@
 
     <!-- Bottom buttons -->
     <div class="bottom-buttons">
-        <button id="left-seat"><img src="left.png" alt="Left Seat Heating"></button>
-        <button id="front-windshield"><img src="front.png" alt="front windshield fog"></button>
-        <button id="back-windshield"><img src="back.png" alt="back windshield fog"></button>
-        <button id="fan"><img src="fan.png" alt="air conditioner"></button>
+        <button id="left-seat-off" class="seat-button"><img src="left.png" alt="Left Seat Heating"></button>
+<button id="left-seat-on" class="seat-button" style="display: none;"><img src="left_on.png" alt="Left Seat Heating On"></button>
+
+<button id="front-windshield-off" class="seat-button"><img src="front.png" alt="front windshield fog"></button>
+<button id="front-windshield-on" class="seat-button" style="display: none;"><img src="front_on.png" alt="front windshield fog on"></button>
+
+<button id="back-windshield-off" class="seat-button"><img src="back.png" alt="back windshield fog"></button>
+<button id="back-windshield-on" class="seat-button" style="display: none;"><img src="back_on.png" alt="back windshield fog on"></button>
+
+        <button id="fan-off" class="seat-button"><img src="fan.png" alt="Right Seat Heating"></button>
+        <button id="fan-on" class="seat-button" style="display: none;"><img src="fan_on.png" alt="Fan On"></button>
+
+
         <button id="tempreture"><img src="tem.png" alt="tempreture"></button>
         <button id="function"><img src="function.png" alt="funtion"></button>
-        <button id="right-seat"><img src="right.png" alt="Right Seat Heating"></button>
+
+        <button id="right-seat-off" class="seat-button"><img src="right.png" alt="Right Seat Heating"></button>
+        <button id="right-seat-on" class="seat-button" style="display: none;"><img src="right_on.png" alt="roght Seat Heating On"></button>
     </div>
     
     
     <script>
+     document.addEventListener('DOMContentLoaded', function() {
+    const buttonsOff = ['left-seat-off', 'front-windshield-off', 'back-windshield-off', 'right-seat-off',"fan-off"];
+    const buttonsOn = ['left-seat-on', 'front-windshield-on', 'back-windshield-on', 'right-seat-on','fan-on'];
+
+    buttonsOff.forEach((buttonId, index) => {
+        const buttonOff = document.getElementById(buttonId);
+        const buttonOn = document.getElementById(buttonsOn[index]);
+
+        buttonOff.addEventListener('click', function() {
+            buttonOff.style.display = 'none';
+            buttonOn.style.display = 'inline-block';
+        });
+
+        buttonOn.addEventListener('click', function() {
+            buttonOn.style.display = 'none';
+            buttonOff.style.display = 'inline-block';
+        });
+    });
+});
+
+
         // Add functionality for the user info
         document.querySelector('.user-info').addEventListener('click', function() {
             // Redirect or show the user selection interface
@@ -116,7 +154,7 @@
     <script src="https://cdn.jsdelivr.net/npm/xstate@4.25.0/dist/xstate.js"></script>
     <script src="map.js"></script>
     <script type="module" src="src/index.ts"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=   " async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=" async defer></script>
 
 </body>
 
