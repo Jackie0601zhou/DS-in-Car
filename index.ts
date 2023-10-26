@@ -13,7 +13,7 @@ const settings: Settings = {
   azureCredentials: azureCredentials,
   asrDefaultCompleteTimeout: 0,
   locale: "en-US",
-  asrDefaultNoInputTimeout: 5000,
+  asrDefaultNoInputTimeout: 0,
   ttsDefaultVoice: "en-US-SaraNeural",
 };
 async function fetchFromChatGPT(prompt: string, max_tokens: number) {
@@ -61,37 +61,93 @@ interface DMContext {
   userInput?: string;
   recognisedData?: any;
   userCurrentLocation?: { lat: number; lng: number };
+  Mode?: string; // warm or cool
+  Switch?: string ; // on or off
+  Intensity?: string; // weak, strong, or medium
+  Temperature?: string; // high or low 
+  Direction?: string; // body,legs or loop (which is the whole car)
+  lofiStart?:string;
+  jazzStart?:string;
+  funkStart?:string;
+  fadeStart?:string;
 }
 
 
 
 
 const grammar = {
-  "I want to go to the supermarket": {
-    Destination: "supermarket"
+  "go home": {
+    StartingPoint: "Humanistiska Fakulteten",
+    Destination: "Frälsegårdsgatan"
   },
-  "from home": {
-    StartingPoint: '${currentLocation.lat}, Lng: ${currentLocation.lng}'
+  "navigate to my office": {
+    StartingPoint: "Humanistiska Fakulteten",
+    Destination: "Lindholmen Science Park"
   },
-  "from where I am": {
-    StartingPoint: "where you are"
-  },
-  "stop at the park": {
-    Stopover: "park"
-  },
-  "avoid highways": {
-    RoutePreference: "avoid highways"
-  },
-  "computer": {
-    StartingPoint: "Molndal",
-    Destination: "Backa",
-    RoutePreference: "avoid highways"
-  },
-  "test sentence": {
+  "show my regular route": {
     StartingPoint: "Molndal",
     Destination: "Backa",
     RoutePreference: "avoid highways",
     Stopover: "Liseberg"
+  },
+  "hello": {
+    Switch: "on",
+    Direction: "towards legs",
+    Mode: "cool",
+    Temperature: "high",
+  },
+
+  "legs": {
+    Switch: "on",
+    Direction: "towards legs",
+  },
+  "body": {
+    Switch: "on",
+    Direction: "towards body",
+  },
+  "loop": {
+    Switch: "on",
+    Direction: "loop",
+  },
+  "cool": {
+    Switch: "on",
+    Mode: "cool",
+  },
+  "warm": {
+    Switch: "on",
+    Mode: "warm",
+  },
+  "high": {
+    Switch: "on",
+    Temperature: "high",
+  },
+  "low": {
+    Switch: "on",
+    Temperature: "low",
+  },
+  "weak": {
+    Switch: "on",
+    Intensity:"weak"
+  },
+  "medium": {
+    Switch: "on",
+    Intensity:"medium"
+  },
+  "strong": {
+    Switch: "on",
+    Intensity:"strong"
+  },
+  "start Lofi": {
+    lofiStart: "on"
+  },
+  "start Jazz": {
+    jazzStart: "on"
+  },
+  "start Funk": {
+    funkStart: "on"
+  },
+  "start Fade": {
+    fadeStart: "on"
   },
 };
 
@@ -153,27 +209,348 @@ const dmMachine = createMachine(
                 on: { SPEAK_COMPLETE: "HowCanIHelp" },
               },
               HowCanIHelp: {
-                entry: say("You can say where you want to go."),
-                on: { SPEAK_COMPLETE: "Start" },
+                entry: listen(),
+                on: {
+                  RECOGNISED: [
+                    { target: "ChangeImageForLeftSeatHeater", guard: "isTurnOnLeftSeatHeaterCommand" },
+                    { target: "ChangeImageForRightSeatHeater", guard: "isTurnOnRightSeatHeaterCommand" },
+                    { target: "ChangeImageForDefogFront", guard: "isDefogFrontWindowCommand" },
+                    { target: "ChangeImageForDefogBack", guard: "isDefogBackWindowCommand" },
+                    { target: "ACFunction", guard: "isACOn" },
+                    { target: "Playlofi", guard: "lofiOn" },
+                    { target: "Playjazz", guard: "jazzOn" },
+                    { target: "Playfunk", guard: "funkOn" },
+                    { target: "Playfade", guard: "fadeOn" },
+                    {
+                      actions: 
+                      assign({
+                        lastResult: ({ event }) => {
+                          console.log("Event RECOGNISED triggered", event);
+                          return event.value;
+                        },
+                      }),
+                      target: 'CheckGrammarMatch'
+                    }
+                  ]
+                }
               },
-              Start: {
+              Playlofi: {
+                entry: ['Playlofi'],
+                on: {
+                  SPEAK_COMPLETE: {
+                    target: [ "#root.DialogueManager.Prepare","#root.GUI.PageLoaded"],
+                    actions: [
+                      // 添加代码将按钮文本设置回 "🎙 Start Voice Command"
+                      ({ context }) => {
+                        const startVoiceButton = document.getElementById('button');
+                        if (startVoiceButton) {
+                          
+                          startVoiceButton.innerText = '🎙 Start Voice Command';
+                          recognition.stop();
+                        }
+                        const icon1 = document.querySelector('.icon1');
+                        if (icon1 instanceof HTMLElement) {
+                          icon1.style.display = 'none';
+                        }
+                      },
+                    ],
+                  }
+                }
+              },
+              Playjazz: {
+                entry: ['Playjazz'],
+                on: {
+                  SPEAK_COMPLETE: {
+                    target: [ "#root.DialogueManager.Prepare","#root.GUI.PageLoaded"],
+                    actions: [
+                      // 添加代码将按钮文本设置回 "🎙 Start Voice Command"
+                      ({ context }) => {
+                        const startVoiceButton = document.getElementById('button');
+                        if (startVoiceButton) {
+                          
+                          startVoiceButton.innerText = '🎙 Start Voice Command';
+                          recognition.stop();
+                        }
+                        const icon1 = document.querySelector('.icon1');
+                        if (icon1 instanceof HTMLElement) {
+                          icon1.style.display = 'none';
+                        }
+                      },
+                    ],
+                  }
+                }
+              },
+              Playfunk: {
+                entry: ['Playfunk'],
+                on: {
+                  SPEAK_COMPLETE: {
+                    target: [ "#root.DialogueManager.Prepare","#root.GUI.PageLoaded"],
+                    actions: [
+                      // 添加代码将按钮文本设置回 "🎙 Start Voice Command"
+                      ({ context }) => {
+                        const startVoiceButton = document.getElementById('button');
+                        if (startVoiceButton) {
+                          
+                          startVoiceButton.innerText = '🎙 Start Voice Command';
+                          recognition.stop();
+                        }
+                        const icon1 = document.querySelector('.icon1');
+                        if (icon1 instanceof HTMLElement) {
+                          icon1.style.display = 'none';
+                        }
+                      },
+                    ],
+                  }
+                }
+              },
+              Playfade: {
+                entry: ['Playfade'],
+                on: {
+                  SPEAK_COMPLETE: {
+                    target: [ "#root.DialogueManager.Prepare","#root.GUI.PageLoaded"],
+                    actions: [
+                      // 添加代码将按钮文本设置回 "🎙 Start Voice Command"
+                      ({ context }) => {
+                        const startVoiceButton = document.getElementById('button');
+                        if (startVoiceButton) {
+                          
+                          startVoiceButton.innerText = '🎙 Start Voice Command';
+                          recognition.stop();
+                        }
+                        const icon1 = document.querySelector('.icon1');
+                        if (icon1 instanceof HTMLElement) {
+                          icon1.style.display = 'none';
+                        }
+                      },
+                    ],
+                  }
+                }
+              },
+
+
+              ChangeImageForLeftSeatHeater: {
+                entry: ['changeImageForLeftSeat'],
+                after: {
+                  30: '#root.DialogueManager.Prepare' // 50ms之后返回初始状态
+                }
+              },
+              ChangeImageForRightSeatHeater: {
+                entry: ['changeImageForRightSeat'],
+                after: {
+                  30: '#root.DialogueManager.Prepare' // 50ms之后返回初始状态
+                }
+              },
+              ChangeImageForDefogFront: {
+                entry: ['changeImageForDefogFront'],
+                after: {
+                  30: '#root.DialogueManager.Prepare' // 50ms之后返回初始状态
+                }
+              },
+              ChangeImageForDefogBack: {
+                entry: ['changeImageForDefogBack'],
+                after: {
+                  30: '#root.DialogueManager.Prepare' // 50ms之后返回初始状态
+                }
+              },
+              ACFunction:{
+                entry:[say("Swithch is on. Do you want to change settings?"),'changeImageForFan'],
+                on:{ SPEAK_COMPLETE: "settingdecision"}
+              },
+              settingdecision:{
+                entry:listen(),
+                on:{
+                  RECOGNISED:[
+                    {
+                      target:"ACFunctionComplete",
+                      guard: ({context,event}) => {
+                        const userInput = ToLowerCase(event.value[0].utterance)
+                        return userInput === "no";
+                      },
+                    },
+                    {
+                      target: "ACFunctionChoose",
+                      guard: ({ context, event }) => {
+                        const userInput = ToLowerCase(event.value[0].utterance)
+                        return userInput === "yes";
+                      },
+                    },
+                  ]
+                }
+              },
+              ACFunctionComplete: {
+                entry: say("Alright. Have a safe journey."),
+                on: { 
+                  SPEAK_COMPLETE: {
+                    target: [ "#root.DialogueManager.Prepare","#root.GUI.PageLoaded"],
+                    actions: [
+                      // 添加代码将按钮文本设置回 "🎙 Start Voice Command"
+                      ({ context }) => {
+                        const startVoiceButton = document.getElementById('button');
+                        if (startVoiceButton) {
+                          
+                          startVoiceButton.innerText = '🎙 Start Voice Command';
+                          recognition.stop();
+                        }
+                        const icon1 = document.querySelector('.icon1');
+                        if (icon1 instanceof HTMLElement) {
+                          icon1.style.display = 'none';
+                        }
+                      },
+                    ],
+                  }
+              },
+            },
+              ACFunctionChoose: {
+                entry: say("You can choose your preferred mode, intensity, temperature, and direction. Let's strat with choosing the mode."),
+                on: { SPEAK_COMPLETE: "ACFunctionChooing" },
+              },
+              ACFunctionChooing: {
                 entry: listen(),
                 on: {
                   RECOGNISED: {
-                    target: 'AskchatGPT',
-                    actions:[
+                    actions: [
+                      ({ event }) => console.log(event),
                       assign({
-                        lastResult: ({ event }) => event.value,
-                      })
+                        userInput: ({ event }) => event.value[0].utterance,
+                        Switch: ({ context, event }) => {
+                          const userInput = ToLowerCase(event.value[0].utterance);
+                          return lowerCaseGrammar[userInput]?.Switch || context.Switch;
+                        },
+                        Mode: ({ context, event }) => {
+                          const userInput = ToLowerCase(event.value[0].utterance);
+                          return lowerCaseGrammar[userInput]?.Mode || context.Mode;
+                        },
+                        Intensity: ({ context, event }) => {
+                          const userInput = ToLowerCase(event.value[0].utterance);
+                          return lowerCaseGrammar[userInput]?.Intensity || context.Intensity;
+                        },
+                        Direction: ({ context, event }) => {
+                          const userInput = ToLowerCase(event.value[0].utterance);
+                          return lowerCaseGrammar[userInput]?.Direction || context.Direction;
+                        },
+                        Temperature: ({ context, event }) => {
+                          const userInput = ToLowerCase(event.value[0].utterance);// Using toLowerCase instead of ToLowerCase
+                          return lowerCaseGrammar[userInput]?.Temperature || context.Temperature;
+                        },
+                      }),
                     ],
+                    target: 'CheckSlotsforAC'
                   }
                 },
               },
-              AskchatGPT:{
+              CheckSlotsforAC: {
+                always: [
+                  { target: 'AskMode', guard: 'isModeMissing' },
+                  { target: 'AskDirection', guard: 'isDirectionMissing' },
+                  { target: 'AskTemperature', guard: 'isTemperatureMissing' },
+                  { target: 'AskIntensity', guard: 'isIntensityMissing' },
+                  { target: 'AskSwitch', guard: 'isSwitchMissing' },
+                  { target: 'ACFunctionFeedback' }, 
+                ]
+                },
+              AskMode: {
+                entry: say('Which Mode would you like?'),
+                on:{ SPEAK_COMPLETE: 'ACFunctionChooing' }
+              },
+              AskDirection: {
+                entry: say('Which Direction would you like?'),
+                on: { SPEAK_COMPLETE: 'ACFunctionChooing' }
+              },
+              AskTemperature: {
+                entry: say('Which Temperature would you like?'),
+                on: { SPEAK_COMPLETE: 'ACFunctionChooing' }
+              },
+              AskIntensity: {
+                entry: say('Which Intensity would you like?'),
+                on: { SPEAK_COMPLETE: 'ACFunctionChooing' }
+              },
+              AskSwitch: {
+                entry: say('Switch is on.'),
+                on: { SPEAK_COMPLETE: 'ACFunctionChooing' }
+              },
+              ACFunctionFeedback: {
+                entry: 'ACFunctionSettingCompelete',
+                on: {
+                  SPEAK_COMPLETE: {
+                    target: [ "#root.DialogueManager.Prepare","#root.GUI.PageLoaded"],
+                    actions: [
+                      // 添加代码将按钮文本设置回 "🎙 Start Voice Command"
+                      ({ context }) => {
+                        const startVoiceButton = document.getElementById('button');
+                        if (startVoiceButton) {
+                          
+                          startVoiceButton.innerText = '🎙 Start Voice Command';
+                          recognition.stop();
+                        }
+                        const icon1 = document.querySelector('.icon1');
+                        if (icon1 instanceof HTMLElement) {
+                          icon1.style.display = 'none';
+                        }
+                      },
+                    ],
+                  }
+                }
+              },
+
+
+
+
+
+              CheckGrammarMatch: {
+                always: [
+                        { target: 'UseGrammarData', guard: 'isInputMatchingGrammar' },
+                        { target: 'AskchatGPT' }
+                    ]
+                },
+                
+                UseGrammarData: {
+                  entry: [
+                    ({ event }) => console.log("Entered UseGrammarData with event:", event),
+                
+                    assign({
+                      userInput: ({ event }) => {
+                        const userInputValue = event.value[0].utterance;
+                        console.log("Assigning userInput:", userInputValue);
+                        return userInputValue;
+                      },
+                    }),
+                    assign({
+                      Destination: ({ context }) => {
+                        const userInput = ToLowerCase(context.userInput);
+                        const matchedDestination = lowerCaseGrammar[userInput]?.Destination || context.Destination;
+                        return matchedDestination;
+                      },
+                    }),
+                    assign({
+                      StartingPoint: ({ context }) => {
+                        const userInput = ToLowerCase(context.userInput);
+                        const matchedStartingPoint = lowerCaseGrammar[userInput]?.StartingPoint || context.StartingPoint;
+                        return matchedStartingPoint;
+                      },
+                    }),
+                    assign({
+                      RoutePreference: ({ context }) => {
+                        const userInput = ToLowerCase(context.userInput);
+                        const matchedRoutePreference = lowerCaseGrammar[userInput]?.RoutePreference || context.RoutePreference;
+                        return matchedRoutePreference;
+                      },
+                    }),
+                    assign({
+                      Stopover: ({ context }) => {
+                        const userInput = ToLowerCase(context.userInput);
+                        const matchedStopover = lowerCaseGrammar[userInput]?.Stopover || context.Stopover;
+                        return matchedStopover;
+                      },
+                    }),
+                  ],
+                  always: { target: "CheckSlots" }
+                },
+                
+                AskchatGPT:{
                 invoke: {
                   src: fromPromise(async({input}) => {
                       const data = await fetchFromChatGPT(
-                        input.lastResult[0].utterance + "reply in a json format with entities: StartingPoint, Destination, RoutePreference, Stopover. If I don't mention any of them, leave it empty.",40,
+                        input.lastResult[0].utterance + "reply in a json format with entities: StartingPoint, Destination, RoutePreference, Stopover. If I don't mention any of them, leave it empty.  Only only lonly if StratingPoint is empty, then set StartingPoint to Humanistiska Fakulteten.",40,
                         );
                         return data;
                     }),
@@ -194,19 +571,10 @@ const dmMachine = createMachine(
                     }
                       }
                     },
-              
 
-    
-              SayBack: {
-                entry: ({ context }) => {
-                    context.spstRef.send({
-                        type: "SPEAK",
-                        value: { utterance: "Great!" },
-                    });
-                },
-                on: { SPEAK_COMPLETE: "FeedbackAndRepeat" },
-              },
-
+                    NoRouteAvailable: {
+                      entry: 'notifyNoRouteAvailable',
+                  },
 
 
 
@@ -214,37 +582,20 @@ const dmMachine = createMachine(
                 always: [
                   { target: 'AskStartingPoint', guard: 'isStartingPointMissing' },
                   { target: 'AskDestination', guard: 'isDestinationMissing' },
-                  
-                  
                   { target: 'FeedbackAndRepeat' },
-                ]
+                ],
                 },
+                
+                
                 AskStartingPoint: {
                   entry: say('Where would you like to start?'),
-                on: { SPEAK_COMPLETE: 'Start' }
-              },
-                
-              
+                  on: { SPEAK_COMPLETE: 'HowCanIHelp' }
+                },
               AskDestination: {
                 entry: say('Where would you like to go?'),
-                on: { SPEAK_COMPLETE: 'Start' }
+                on: { SPEAK_COMPLETE: 'HowCanIHelp' }
               },
-              
-              AskRoutePreference: {
-                entry: ({ context }) => {
-                  // 直接将默认的路线偏好用于导航
-                  context.RoutePreference = 'no specific preferences';
-                },
-                on: { SPEAK_COMPLETE: 'Start' }
-              },
-              
-              AskStopover: {
-                entry: ({ context }) => {
-                  // 直接将默认的路线偏好用于导航
-                  context.Stopover = 'no stopover';
-                },
-                on: { SPEAK_COMPLETE: 'Start' }
-              },
+
               FeedbackAndRepeat: {
                 entry: ['navigateFeedback','stopVoiceFunction', ],
                 on: {
@@ -309,10 +660,55 @@ const dmMachine = createMachine(
 
   {
     guards: {
+        isModeMissing: ({ context }) => !context.Mode,
+        isDirectionMissing: ({ context }) => !context.Direction,
+        isTemperatureMissing: ({ context }) => !context.Temperature, 
+        isIntensityMissing: ({ context }) => !context.Intensity,
+        isSwitchMissing: ({ context }) => !context.Switch,
       isStartingPointMissing: ({ context }) => !context.StartingPoint,
       isDestinationMissing: ({ context }) => !context.Destination,
-      
-      
+      isInputMatchingGrammar: ({ context, event }) => {
+        const userInput = ToLowerCase(event.value[0].utterance);
+        console.log("User input:", userInput);
+        console.log("Matching grammar:", !!lowerCaseGrammar[userInput]);
+        return !!lowerCaseGrammar[userInput];
+    },
+      isTurnOnLeftSeatHeaterCommand: ({context, event}) => {
+        const userInput = ToLowerCase(event.value[0].utterance);
+        return userInput === "turn on left seat heater";
+      },
+      isTurnOnRightSeatHeaterCommand: ({context, event}) => {
+        const userInput = ToLowerCase(event.value[0].utterance);
+        return userInput === "turn on right seat heater";
+      },
+      isDefogFrontWindowCommand: ({context, event}) => {
+        const userInput = ToLowerCase(event.value[0].utterance);
+        return userInput === "turn on front window defogging";
+      },
+      isDefogBackWindowCommand: ({context, event}) => {
+        const userInput = ToLowerCase(event.value[0].utterance);
+        return userInput === "turn on back window defogging";
+      },
+      isACOn: ({context, event}) => {
+        const userInput = ToLowerCase(event.value[0].utterance);
+        return userInput === "turn air conditioner on";
+      },
+      lofiOn: ({context, event}) => {
+        const userInput = ToLowerCase(event.value[0].utterance);
+        return userInput === "play lofi";
+      },
+      jazzOn: ({context, event}) => {
+        const userInput = ToLowerCase(event.value[0].utterance);
+        return userInput === "play jazz";
+      },
+      funkOn: ({context, event}) => {
+        const userInput = ToLowerCase(event.value[0].utterance);
+        return userInput === "play funk";
+      },
+      fadeOn: ({context, event}) => {
+        const userInput = ToLowerCase(event.value[0].utterance);
+        return userInput === "play fade";
+      },
     },
     
 
@@ -321,6 +717,12 @@ const dmMachine = createMachine(
         context.spstRef.send({
           type: "PREPARE",
         }),
+        notifyNoRouteAvailable: ({ context }) => {
+          context.spstRef.send({
+            type: "SPEAK",
+            value: { utterance: "Wrong way!" },
+          });
+        },
       // saveLastResult:
       "speak.greeting": ({ context }) => {
         context.spstRef.send({
@@ -351,7 +753,7 @@ const dmMachine = createMachine(
       navigateFeedback: ({ context }) => {
         context.spstRef.send({
           type: "SPEAK",
-          value: { utterance: `Ok! Planning the route. Starting navigation!.Have a safe journey` },
+          value: { utterance: `Planning the route. Starting navigation!.Have a safe journey` },
         });
         const startName = context.StartingPoint;
         const endName = context.Destination;
@@ -359,9 +761,127 @@ const dmMachine = createMachine(
         const routePreference = context.RoutePreference
         navigateUsingPlaceName(startName, endName, stopoverName,routePreference);
       },
-      
+      changeImageForLeftSeat: () => {
+        const buttonOff = document.getElementById('left-seat-off');
+        const buttonOn = document.getElementById('left-seat-on');
+        if (buttonOff && buttonOn) {
+            if (buttonOff.style.display === 'none') {
+                buttonOff.style.display = 'inline-block';
+                buttonOn.style.display = 'none';
+            } else {
+                buttonOff.style.display = 'none';
+                buttonOn.style.display = 'inline-block';
+            }
+            // 假设您的语音识别对象是 recognition
+            if (typeof recognition !== 'undefined') {
+                recognition.stop();
+            }
+            resetInterface()
+        } 
+    },
+    changeImageForRightSeat: () => {
+      const buttonOff = document.getElementById('right-seat-off');
+      const buttonOn = document.getElementById('right-seat-on');
+      if (buttonOff && buttonOn) {
+          if (buttonOff.style.display === 'none') {
+              buttonOff.style.display = 'inline-block';
+              buttonOn.style.display = 'none';
+          } else {
+              buttonOff.style.display = 'none';
+              buttonOn.style.display = 'inline-block';
+          }
+          // 假设您的语音识别对象是 recognition
+          if (typeof recognition !== 'undefined') {
+              recognition.stop();
+          }
+          resetInterface()
+      } 
+  },
+  changeImageForDefogFront: () => {
+    const buttonOff = document.getElementById('front-windshield-off');
+    const buttonOn = document.getElementById('front-windshield-on');
+    if (buttonOff && buttonOn) {
+        if (buttonOff.style.display === 'none') {
+            buttonOff.style.display = 'inline-block';
+            buttonOn.style.display = 'none';
+        } else {
+            buttonOff.style.display = 'none';
+            buttonOn.style.display = 'inline-block';
+        }
+        // 假设您的语音识别对象是 recognition
+        if (typeof recognition !== 'undefined') {
+            recognition.stop();
+        }
+        resetInterface()
+    } 
+},
+changeImageForDefogBack: () => {
+  const buttonOff = document.getElementById('back-windshield-off');
+  const buttonOn = document.getElementById('back-windshield-on');
+  if (buttonOff && buttonOn) {
+      if (buttonOff.style.display === 'none') {
+          buttonOff.style.display = 'inline-block';
+          buttonOn.style.display = 'none';
+      } else {
+          buttonOff.style.display = 'none';
+          buttonOn.style.display = 'inline-block';
+      }
+      // 假设您的语音识别对象是 recognition
+      if (typeof recognition !== 'undefined') {
+          recognition.stop();
+      }
+      resetInterface();
+  } 
+},
+changeImageForFan: () => {
+  const buttonOff = document.getElementById('fan-off');
+  const buttonOn = document.getElementById('fan-on');
+  if (buttonOff && buttonOn) {
+      if (buttonOff.style.display === 'none') {
+          buttonOff.style.display = 'inline-block';
+          buttonOn.style.display = 'none';
+      } else {
+          buttonOff.style.display = 'none';
+          buttonOn.style.display = 'inline-block';
+      }
+      // 假设您的语音识别对象是 recognition
+      if (typeof recognition !== 'undefined') {
+          recognition.stop();
+      }
+      resetInterface();
+  } 
+},
+ACFunctionSettingCompelete: ({ context }) => {
+  context.spstRef.send({
+    type: "SPEAK",
+    value: { utterance: `Alright,the air-conditioner is turn ${context.Switch}, on ${context.Mode} mode and on ${context.Intensity} intensity, the temperature is ${context.Temperature},the direction is ${context.Direction}` },
+  });
+},
 
-     
+Playlofi:  ({ }) => { 
+  const lofiPlayer = document.getElementById('lofi');
+(lofiPlayer as any).src += "&autoplay=1";
+},
+
+Playjazz:  ({ }) => { 
+  const jazzPlayer = document.getElementById('jazz');
+(jazzPlayer as any).src += "&autoplay=1";
+},
+
+Playfunk:  ({ }) => { 
+  const funkPlayer = document.getElementById('funk');
+(funkPlayer as any).src += "&autoplay=1";
+},
+
+Playfade:  ({ }) => { 
+  const fadePlayer = document.getElementById('fade');
+(fadePlayer as any).src += "&autoplay=1";
+},
+
+    
+    
+      
+  
       
       showIcon1: () => {
         const icon1 = document.querySelector('.icon1');
@@ -386,8 +906,6 @@ const dmMachine = createMachine(
 );
 
 
-
-
 function stopVoiceFunction(context) {
   if (context.spstRef) {
     // 停止语音合成
@@ -396,7 +914,21 @@ function stopVoiceFunction(context) {
     });
   }
 }
+function resetInterface() {
+  // 重置界面元素
+  const speakIcon = document.getElementById('speak-icon');
+  const listenIcon = document.getElementById('listen-icon');
+  const userUtterance = document.getElementById('user-utterance');
+  const startButton = document.getElementById('button');
 
+  if (speakIcon && listenIcon && userUtterance && startButton) {
+    speakIcon.style.display = 'none';
+    listenIcon.style.display = 'none';
+    userUtterance.textContent = 'If you have any questions, feel free to call my name loudly! Have a safe journey!';
+    startButton.textContent = '🎙 Start Voice Command';
+  }
+  
+}
 
   // 获取图标的元素
   const icon1 = document.getElementById('speak-icon');
@@ -409,11 +941,9 @@ document.addEventListener('DOMContentLoaded', function () {
 if (startVoiceButton) {
     startVoiceButton.addEventListener('click', () => {
         isAwake = true;
-        recognition.start();
+        
     });
 }
-
-
 
   // 初始化按钮的文本
   startVoiceButton.innerText = '🎙 Start Voice Command';
@@ -481,7 +1011,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 });
 
 
-const wakeUpWord = "my smart car"; // 唤醒词
+const wakeUpWord = "hello my car"; // 唤醒词
 const userUtteranceDiv = document.getElementById('user-utterance');
         
 // Azure 语音服务的订阅密钥和服务区域
@@ -497,7 +1027,7 @@ recognition.interimResults = true; // 获取中间结果，即时识别
 recognition.continuous = true; // 连续识别
 
 let silenceTimer;
-const SILENCE_THRESHOLD = 5000;
+const SILENCE_THRESHOLD = 3000;
 let isAwake = false;
 // 监听识别结果
 recognition.onresult = (event) => {
@@ -506,16 +1036,14 @@ recognition.onresult = (event) => {
   const transcript = lastResult[0].transcript;
   const isFinal = lastResult.isFinal;
   if (!isAwake) {
-    // 如果尚未唤醒系统，检查是否包含唤醒词
     if (transcript.toLowerCase().includes(wakeUpWord.toLowerCase())) {
       isAwake = true; // 唤醒系统
-      // 可以在此添加提示或界面更新来指示系统已唤醒
-      console.log('System is awake');
+    
       const startVoiceButton = document.getElementById('button');
       if (startVoiceButton) {
         startVoiceButton.click();
       }
-      recognition.start();
+      
       recognition.onstart = function() {
         console.log('Speech recognition service has started');
     };
@@ -554,7 +1082,15 @@ recognition.onresult = (event) => {
     startVoiceButton.innerText = '🎙 Start Voice Command';
     }, SILENCE_THRESHOLD);
 
+
+
+
+
+    
 };
+
+
+
 // 启动语音识别
 recognition.start();
 
